@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {CustomerMapper.class, BookingItemMapper.class})
+@Mapper(componentModel = "spring")
 public interface BookingMapper {
     BookingResponseDTO toDto(Booking entity);
     List<BookingResponseDTO> toDtoList(List<Booking> entities);

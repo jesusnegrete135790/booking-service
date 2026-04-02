@@ -30,17 +30,14 @@ public class Booking {
     @Column(name = "booking_date", nullable = false)
     private LocalDateTime bookingDate;
 
-    // Ej: "PENDING" (Esperando pago), "CONFIRMED" (Pagado), "CANCELLED" (Tiempo expirado)
     @Column(nullable = false)
     private String status;
 
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
-
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookingItem> items = new ArrayList<>();
-
 
     public void addBookingItem(BookingItem item) {
         items.add(item);
