@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/bookings")
 @AllArgsConstructor
@@ -20,5 +22,15 @@ public class BookingController {
     public ResponseEntity<BookingResponseDTO> createBooking(@Valid @RequestBody BookingRequestDTO request) {
         BookingResponseDTO response = bookingService.createBooking(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookingResponseDTO>getBookingById(@Valid @PathVariable Integer id){
+        return ResponseEntity.ok(bookingService.getBookingById(id));
+    }
+
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<BookingResponseDTO>>getBookingsByCustomerId(@Valid @PathVariable Integer customerId){
+        return ResponseEntity.ok(bookingService.getBookingsByCustomerId(customerId));
     }
 }

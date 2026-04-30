@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -63,5 +64,21 @@ public class BookingServiceImpl implements BookingService {
         Booking savedBooking = bookingRepository.save(booking);
 
         return bookingMapper.toDto(savedBooking);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BookingResponseDTO getBookingById(Integer id) {
+        Booking booking =bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("no encontrado"));
+
+        return bookingMapper.toDto(booking);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getBookingsByCustomerId(Integer customerId) {
+        List<Booking> bookings =bookingRepository.findByCustomerId(customerId);
+        return bookingMapper.toDtoList(bookings);
     }
 }
