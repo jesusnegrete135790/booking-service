@@ -11,7 +11,8 @@ import com.jesusn.booking.booking_service.mappers.BookingMapper;
 import com.jesusn.booking.booking_service.repositories.BookingRepository;
 import com.jesusn.booking.booking_service.repositories.CustomerRepository;
 import com.jesusn.booking.booking_service.services.BookingService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +21,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final CustomerRepository customerRepository;
     private final InventoryClient inventoryClient;
     private final BookingMapper bookingMapper;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     @Transactional
@@ -63,6 +65,7 @@ public class BookingServiceImpl implements BookingService {
 
         Booking savedBooking = bookingRepository.save(booking);
 
+        kafkaTemplate.send("booking-events", savedBooking);
         return bookingMapper.toDto(savedBooking);
     }
 
@@ -72,6 +75,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking =bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("no encontrado"));
 
+        kafkaTemplate.send("booking-events", bookingMapper.toDto(booking));
         return bookingMapper.toDto(booking);
     }
 
@@ -79,6 +83,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     public List<BookingResponseDTO> getBookingsByCustomerId(Integer customerId) {
         List<Booking> bookings =bookingRepository.findByCustomerId(customerId);
+        kafkaTemplate.send("booking-events", bookingMapper.toDtoList(bookings));
         return bookingMapper.toDtoList(bookings);
     }
 }
